@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Copy · Heraldo</title>
+<style>
+  :root {
+    --navy: #0E1B3B;
+    --blue: #1565C0;
+    --blue-light: #E3F0FC;
+    --blue-mid: #378ADD;
+    --accent: #1D9E75;
+    --accent-light: #E1F5EE;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --surface: #F4F6FA;
+    --card: #FFFFFF;
+    --border: #E2E5EC;
+    --border-strong: #C5CAD8;
+    --text-primary: #0E1B3B;
+    --text-secondary: #4A5568;
+    --text-muted: #8A94A6;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--surface);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── LOGIN SCREEN ── */
+  #loginScreen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: var(--navy);
+  }
+  .login-logo {
+    width: 56px; height: 56px;
+    background: #fff;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; font-weight: 800; color: var(--navy);
+    margin-bottom: 20px;
+  }
+  .login-title { color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 6px; text-align: center; }
+  .login-sub { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 32px; text-align: center; }
+  .login-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: var(--radius);
+    padding: 24px;
+    width: 100%; max-width: 340px;
+  }
+  .login-label { color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+  .login-input {
+    width: 100%; height: 48px;
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-sm);
+    padding: 0 16px;
+    color: #fff; font-size: 16px;
+    outline: none; font-family: inherit;
+    letter-spacing: 0.1em;
+    transition: border-color 0.15s;
+  }
+  .login-input:focus { border-color: var(--blue-mid); }
+  .login-input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 0; }
+  .login-btn {
+    width: 100%; height: 48px;
+    background: var(--blue-mid);
+    color: #fff; border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 14px;
+    font-family: inherit;
+    transition: background 0.15s;
+  }
+  .login-btn:hover { background: var(--blue); }
+  .login-error { color: #F09595; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+
+  /* ── APP ── */
+  #app { display: none; }
+
+  .header {
+    background: var(--navy);
+    padding: 0 16px;
+    display: flex; align-items: center; gap: 12px;
+    height: 52px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-logo {
+    width: 28px; height: 28px; background: #fff;
+    border-radius: 6px; display: flex; align-items: center;
+    justify-content: center; font-weight: 800; font-size: 14px;
+    color: var(--navy); flex-shrink: 0;
+  }
+  .header-title { color: #fff; font-size: 14px; font-weight: 600; flex: 1; }
+  .header-logout {
+    color: rgba(255,255,255,0.4); font-size: 12px;
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; padding: 4px 8px;
+  }
+  .header-logout:hover { color: rgba(255,255,255,0.8); }
+
+  .main { padding: 16px 16px 100px; max-width: 680px; margin: 0 auto; }
+
+  /* Input card */
+  .input-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(14,27,59,0.08);
+  }
+  .input-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 8px; display: block;
+  }
+  .url-input {
+    width: 100%; height: 48px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    padding: 0 14px;
+    font-size: 15px; color: var(--text-primary);
+    background: var(--surface);
+    outline: none; font-family: inherit;
+    transition: border-color 0.15s;
+  }
+  .url-input:focus { border-color: var(--blue-mid); background: #fff; }
+  .url-input::placeholder { color: var(--text-muted); font-size: 14px; }
+
+  .context-input {
+    width: 100%; height: 40px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    font-size: 13px; color: var(--text-primary);
+    background: var(--surface);
+    outline: none; font-family: inherit;
+    margin-top: 10px;
+    transition: border-color 0.15s;
+  }
+  .context-input:focus { border-color: var(--blue-mid); background: #fff; }
+
+  .btn-generate {
+    width: 100%; height: 50px;
+    background: var(--blue);
+    color: #fff; border: none;
+    border-radius: var(--radius-sm);
+    font-size: 16px; font-weight: 700;
+    cursor: pointer; margin-top: 12px;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s;
+    -webkit-appearance: none;
+  }
+  .btn-generate:active { background: #0D47A1; transform: scale(0.99); }
+  .btn-generate:disabled { background: var(--border-strong); cursor: not-allowed; }
+
+  /* Loading */
+  #loadingState {
+    display: none;
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+  }
+  #loadingState.visible { display: block; }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-step { font-size: 13px; color: var(--text-muted); padding: 3px 0; transition: color 0.2s; }
+  .loading-step.active { color: var(--blue); font-weight: 600; }
+  .loading-step.done { color: var(--accent); }
+  .loading-step.done::before { content: '✓ '; }
+
+  /* Error */
+  #errorCard {
+    display: none;
+    background: #FFEBEE;
+    border: 1px solid #FFCDD2;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px; color: #B71C1C;
+    margin-bottom: 14px;
+  }
+  #errorCard.visible { display: block; }
+
+  /* Results */
+  #results { display: none; }
+  #results.visible { display: block; }
+
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 18px 0 10px;
+  }
+
+  /* Article pill */
+  .article-pill {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    margin-bottom: 4px;
+    box-shadow: 0 1px 3px rgba(14,27,59,0.06);
+  }
+  .article-section-tag {
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .article-headline { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text-primary); }
+
+  /* Proposal cards */
+  .proposal-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 2px solid transparent;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    box-shadow: 0 1px 3px rgba(14,27,59,0.06);
+    -webkit-user-select: none; user-select: none;
+  }
+  .proposal-card.selected { border-color: var(--blue); }
+  .proposal-card:active { opacity: 0.95; }
+
+  .proposal-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .radio-dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid var(--border-strong);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .proposal-card.selected .radio-dot {
+    background: var(--blue); border-color: var(--blue);
+  }
+  .radio-dot::after {
+    content: ''; width: 8px; height: 8px;
+    background: #fff; border-radius: 50%; opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .proposal-card.selected .radio-dot::after { opacity: 1; }
+
+  .type-badge {
+    font-size: 11px; font-weight: 700; padding: 3px 10px;
+    border-radius: 20px; letter-spacing: 0.03em;
+  }
+  .type-cita { background: var(--blue-light); color: var(--blue); }
+  .type-dato { background: var(--accent-light); color: #085041; }
+  .type-tension { background: var(--amber-light); color: #633806; }
+  .type-narrativa { background: #EEEDFE; color: #3C3489; }
+
+  .proposal-num { font-size: 12px; color: var(--text-muted); margin-left: auto; }
+
+  .proposal-header {
+    font-size: 20px; font-weight: 800;
+    color: var(--navy); line-height: 1.2;
+    letter-spacing: -0.01em; margin-bottom: 10px;
+  }
+  .proposal-summary {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-secondary); line-height: 1.5;
+    border-left: 3px solid var(--border);
+    padding-left: 10px; margin-bottom: 12px;
+  }
+
+  .proposal-footer {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  .tag {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 20px; border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .tag.ok { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .tag.warn { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+  .rationale {
+    font-size: 12px; color: var(--text-muted);
+    font-style: italic; margin-top: 8px; line-height: 1.4;
+  }
+
+  /* Layout card */
+  .layout-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(14,27,59,0.06);
+    margin-bottom: 14px;
+  }
+  .layout-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .layout-reason { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+  .layout-thumbs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .layout-thumb {
+    flex: 1; height: 56px;
+    border-radius: 8px; border: 2px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden;
+    position: relative;
+  }
+  .layout-thumb.active { border-color: var(--blue); }
+  .lt-img { flex: 1; background: var(--border); }
+  .lt-bar { height: 16px; background: rgba(14,27,59,0.8); display: flex; align-items: center; padding: 0 4px; }
+  .lt-line { width: 70%; height: 2px; background: rgba(255,255,255,0.7); border-radius: 1px; }
+  .lt-label { position: absolute; top: 4px; left: 0; right: 0; text-align: center; font-size: 10px; font-weight: 800; color: rgba(0,0,0,0.4); }
+
+  /* Bottom action bar */
+  .action-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    display: flex; gap: 10px;
+    box-shadow: 0 -4px 16px rgba(14,27,59,0.08);
+    z-index: 50;
+  }
+  .btn-regen {
+    height: 46px; padding: 0 16px;
+    background: none; border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    font-size: 14px; font-weight: 600; color: var(--text-secondary);
+    cursor: pointer; font-family: inherit;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .btn-regen:active { background: var(--surface); }
+  .btn-approve {
+    flex: 1; height: 46px;
+    background: var(--accent); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s;
+    -webkit-appearance: none;
+  }
+  .btn-approve:active { background: #0F6E56; }
+
+  /* Angle field */
+  .field-divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .required-label { display: flex; align-items: center; gap: 8px; }
+  .required-badge {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase; padding: 2px 7px;
+    background: var(--navy); color: #fff; border-radius: 20px;
+  }
+  .angle-input {
+    width: 100%; border: 2px solid var(--navy);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px; font-size: 14px;
+    color: var(--text-primary); background: var(--surface);
+    outline: none; font-family: inherit;
+    resize: none; line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  .angle-input:focus { border-color: var(--blue-mid); background: #fff; }
+  .angle-input::placeholder { color: var(--text-muted); font-size: 13px; }
+  .field-hint {
+    font-size: 12px; color: var(--text-muted);
+    margin-top: 6px; line-height: 1.4;
+    font-style: italic;
+  }
+
+  /* Section pills */
+  .section-pills {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .section-pill {
+    height: 32px; padding: 0 14px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 20px; background: var(--surface);
+    font-size: 13px; font-weight: 500; color: var(--text-secondary);
+    cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .section-pill.active {
+    background: var(--navy); color: #fff;
+    border-color: var(--navy);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--navy); color: #fff;
+    padding: 12px 20px; border-radius: 24px;
+    font-size: 14px; font-weight: 500;
+    opacity: 0; transition: all 0.2s;
+    pointer-events: none; z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Copy sheet (modal) */
+  .sheet-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    align-items: flex-end;
+  }
+  .sheet-overlay.open { display: flex; }
+  .sheet {
+    background: var(--card);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+    width: 100%;
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .sheet-handle { width: 40px; height: 4px; background: var(--border-strong); border-radius: 2px; margin: 0 auto 20px; }
+  .sheet-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .copy-block {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+    font-family: -apple-system, monospace;
+    font-size: 14px; line-height: 1.6;
+    white-space: pre-wrap; color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .sheet-copy-btn {
+    width: 100%; height: 50px;
+    background: var(--navy); color: #fff;
+    border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    margin-bottom: 10px;
+  }
+  .sheet-close-btn {
+    width: 100%; height: 44px;
+    background: none; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--text-secondary);
+    cursor: pointer; font-family: inherit;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-logo">H</div>
+  <div class="login-title">Generador de copy</div>
+  <div class="login-sub">Imágenes de interacción · El Heraldo de México</div>
+  <div class="login-card">
+    <label class="login-label">Contraseña de acceso</label>
+    <input type="password" class="login-input" id="passInput" placeholder="••••••••" />
+    <button class="login-btn" onclick="checkPass()">Entrar</button>
+    <div class="login-error" id="loginError">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <div class="header-logo">H</div>
+    <span class="header-title">Generador de copy</span>
+    <button class="header-logout" onclick="logout()">Salir</button>
+  </div>
+
+  <div class="main">
+
+    <!-- Input -->
+    <div class="input-card">
+      <label class="input-label">Liga de la nota</label>
+      <input type="url" class="url-input" id="urlInput"
+        placeholder="https://heraldo.com.mx/nota/…"
+        autocomplete="off" autocorrect="off" autocapitalize="off" />
+
+      <div class="field-divider"></div>
+
+      <label class="input-label required-label">
+        Ángulo editorial
+        <span class="required-badge">Obligatorio</span>
+      </label>
+      <textarea class="angle-input" id="angleInput" rows="2"
+        placeholder="¿Qué parte de la nota quieres destacar? Ej: la reacción de la gente, el dato del precio, la declaración del político en el párrafo 3…"></textarea>
+      <div class="field-hint">Lee la nota primero. Esto define qué va a generar la IA.</div>
+
+      <label class="input-label" style="margin-top:14px;">Sección</label>
+      <div class="section-pills" id="sectionPills">
+        <button class="section-pill" onclick="selectSection(this,'Nacional')">Nacional</button>
+        <button class="section-pill" onclick="selectSection(this,'Espectáculos')">Espectáculos</button>
+        <button class="section-pill" onclick="selectSection(this,'Deportes')">Deportes</button>
+        <button class="section-pill" onclick="selectSection(this,'Internacional')">Internacional</button>
+        <button class="section-pill" onclick="selectSection(this,'Viral')">Viral</button>
+        <button class="section-pill" onclick="selectSection(this,'Economía')">Economía</button>
+        <button class="section-pill" onclick="selectSection(this,'CDMX')">CDMX</button>
+      </div>
+
+      <button class="btn-generate" id="genBtn" onclick="generate()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Generar propuestas
+      </button>
+    </div>
+
+    <!-- Error -->
+    <div id="errorCard"></div>
+
+    <!-- Loading -->
+    <div id="loadingState">
+      <div class="spinner"></div>
+      <div id="step1" class="loading-step">Leyendo la nota…</div>
+      <div id="step2" class="loading-step">Identificando ángulos editoriales…</div>
+      <div id="step3" class="loading-step">Aplicando reglas del manual…</div>
+      <div id="step4" class="loading-step">Generando propuestas de copy…</div>
+    </div>
+
+    <!-- Results -->
+    <div id="results">
+      <div class="section-label">Nota detectada</div>
+      <div class="article-pill" id="articlePill"></div>
+
+      <div class="section-label" style="margin-top:20px;">Propuestas de copy</div>
+      <div id="proposalsGrid"></div>
+
+      <div class="section-label">Layout sugerido</div>
+      <div class="layout-card" id="layoutCard"></div>
+    </div>
+
+  </div><!-- /main -->
+
+  <!-- Bottom bar (only visible when results shown) -->
+  <div class="action-bar" id="actionBar" style="display:none;">
+    <button class="btn-regen" onclick="generate()">↺ Nueva</button>
+    <button class="btn-approve" onclick="openSheet()">Aprobar y copiar →</button>
+  </div>
+</div>
+
+<!-- Copy sheet -->
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Copy listo para diseño</div>
+    <div class="copy-block" id="copyBlock"></div>
+    <button class="sheet-copy-btn" onclick="doCopy()">Copiar al portapapeles</button>
+    <button class="sheet-close-btn" onclick="closeSheet()">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────
+const PASSWORD = 'heraldo2026';
+const SESSION_KEY = 'hi_auth';
+
+function checkPass() {
+  const val = document.getElementById('passInput').value;
+  if (val === PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('loginError').style.display = 'none';
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('passInput').value = '';
+  }
+}
+function logout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+document.getElementById('passInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPass();
+});
+if (sessionStorage.getItem(SESSION_KEY)) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+
+// ── SYSTEM PROMPT ─────────────────────────────────────────────
+const SYSTEM = `Eres un editor experto en copy para imágenes de interacción de El Heraldo de México. Generas propuestas basadas en el manual editorial del equipo de diseño.
+
+REGLAS OBLIGATORIAS:
+ENCABEZADO: máximo 8 palabras (ideal 4-6). Si es cita textual: entre comillas, máx 10 palabras. Debe entenderse SIN el sumario. Genera curiosidad, emoción o toma posición. NUNCA solo "Fulano dice X".
+SUMARIO: máximo 15 palabras (2 líneas). Responde solo UNA: ¿quién?, ¿qué pasó?, ¿por qué importa?. NO repite palabras del encabezado. Añade información nueva.
+
+ESTILOS (uno distinto por propuesta):
+- cita: frase textual entre comillas que sorprende o polariza
+- dato: cifra o ranking sorprendente sin cita
+- tension: suspenso sin revelar el desenlace
+- narrativa: imagen mental impactante (animales, situaciones inusuales)
+
+MECANISMOS (en orden de prioridad):
+1. Opinión que polariza
+2. Imagen mental impactante
+3. Dato sorprendente
+4. Humor o ironía situacional
+
+ERRORES PROHIBIDOS:
+- Encabezado que solo nombra sin gancho
+- Sumario que repite el encabezado
+- Más de 8 palabras en el encabezado
+- Citas largas sin tensión
+
+RESPONDE SOLO con JSON válido. Sin markdown, sin texto adicional:
+{
+  "article": { "title": "título", "summary": "1-2 oraciones", "section": "sección" },
+  "proposals": [
+    {
+      "type": "cita|dato|tension|narrativa",
+      "header": "ENCABEZADO EN MAYÚSCULAS",
+      "summary": "Sumario normal máx 15 palabras",
+      "wordCount": 5,
+      "mechanism": "mecanismo activado",
+      "tags": [{"label": "5 palabras", "status": "ok"}, {"label": "mecanismo", "status": "ok"}],
+      "rationale": "1 oración de por qué funciona"
+    }
+  ],
+  "layout": { "suggested": "A|B|C", "reason": "1 oración justificando el layout" }
+}
+Genera EXACTAMENTE 3 propuestas, cada una con tipo distinto. Encabezados SIEMPRE en mayúsculas.`;
+
+// ── STATE ─────────────────────────────────────────────────────
+let selectedIdx = null;
+let currentData = null;
+let loadTimer = null;
+
+// ── SECTION PILL ──────────────────────────────────────────────
+let selectedSection = '';
+function selectSection(el, val) {
+  document.querySelectorAll('.section-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  selectedSection = val;
+}
+
+// ── GENERATE ──────────────────────────────────────────────────
+async function generate() {
+  const url = document.getElementById('urlInput').value.trim();
+  if (!url) { showError('Pega la liga de la nota primero.'); return; }
+
+  const angle = document.getElementById('angleInput').value.trim();
+  if (!angle) {
+    document.getElementById('angleInput').focus();
+    showError('Escribe el ángulo editorial antes de generar. Esto asegura que la IA use el criterio que tú decidiste, no cualquier dato de la nota.');
+    return;
+  }
+
+  let msg = `Analiza esta nota y genera 3 propuestas de copy para imagen de interacción:\n\nURL: ${url}`;
+  if (selectedSection) msg += `\nSección: ${selectedSection}`;
+  msg += `\n\nÁNGULO EDITORIAL DEFINIDO POR EL EDITOR:\n"${angle}"\n\nIMPORTANTE: Las 3 propuestas deben respetar este ángulo. No inventes datos que no estén en la nota. Si no puedes acceder a la URL, usa el slug y el ángulo dado para generar propuestas realistas.`;
+
+  hideError(); hideResults();
+  showLoading();
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ system: SYSTEM, message: msg })
+    });
+    if (!res.ok) throw new Error('Error ' + res.status);
+    const json = await res.json();
+    const raw = json.text || '';
+    let parsed;
+    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
+    catch(e) { throw new Error('No se pudo leer la respuesta. Intenta de nuevo.'); }
+    currentData = parsed;
+    hideLoading();
+    renderResults(parsed);
+  } catch(err) {
+    hideLoading();
+    showError(err.message);
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function renderResults(data) {
+  selectedIdx = null;
+
+  // Article
+  const angle = document.getElementById('angleInput').value.trim();
+  document.getElementById('articlePill').innerHTML = `
+    <div class="article-section-tag">${selectedSection || data.article.section || 'General'}</div>
+    <div class="article-headline">${data.article.title}</div>
+    ${angle ? `<div style="margin-top:8px;font-size:12px;color:var(--muted);border-top:1px solid var(--border);padding-top:8px;">
+      <span style="font-weight:700;color:var(--navy);">Ángulo:</span> ${angle}
+    </div>` : ''}
+  `;
+
+  // Proposals
+  const typeLabel = { cita:'Cita directa', dato:'Dato duro', tension:'Tensión narrativa', narrativa:'Narración visual' };
+  const typeClass = { cita:'type-cita', dato:'type-dato', tension:'type-tension', narrativa:'type-narrativa' };
+  const grid = document.getElementById('proposalsGrid');
+  grid.innerHTML = '';
+
+  data.proposals.forEach((p, i) => {
+    const div = document.createElement('div');
+    div.className = 'proposal-card';
+    div.dataset.i = i;
+    div.onclick = () => selectCard(i);
+    const tags = (p.tags||[]).map(t =>
+      `<span class="tag ${t.status==='ok'?'ok':t.status==='warn'?'warn':''}">${t.label}</span>`
+    ).join('');
+    div.innerHTML = `
+      <div class="proposal-top">
+        <div class="radio-dot"></div>
+        <span class="type-badge ${typeClass[p.type]||'type-cita'}">${typeLabel[p.type]||p.type}</span>
+        <span class="proposal-num">${i+1} / 3</span>
+      </div>
+      <div class="proposal-header">${p.header}</div>
+      <div class="proposal-summary">${p.summary}</div>
+      <div class="proposal-footer">${tags}</div>
+      <div class="rationale">${p.rationale}</div>
+    `;
+    grid.appendChild(div);
+  });
+
+  // Layout
+  const L = data.layout || {};
+  const lNames = { A:'Layout A · Foto + caja inferior', B:'Layout B · Foto de fondo full', C:'Layout C · Composición ilustrativa' };
+  document.getElementById('layoutCard').innerHTML = `
+    <div class="layout-thumbs">
+      ${['A','B','C'].map(l=>`
+        <div class="layout-thumb ${L.suggested===l?'active':''}">
+          <div class="lt-img"></div>
+          <div class="lt-bar"><div class="lt-line"></div></div>
+          <span class="lt-label">${l}</span>
+        </div>`).join('')}
+    </div>
+    <div class="layout-name">${lNames[L.suggested]||'Layout '+L.suggested}</div>
+    <div class="layout-reason">${L.reason||''}</div>
+  `;
+
+  showResults();
+}
+
+function selectCard(i) {
+  selectedIdx = i;
+  document.querySelectorAll('.proposal-card').forEach((c,j) => {
+    c.classList.toggle('selected', j===i);
+  });
+}
+
+// ── SHEET ─────────────────────────────────────────────────────
+function openSheet() {
+  if (selectedIdx === null) { showToast('Selecciona una propuesta primero'); return; }
+  const p = currentData.proposals[selectedIdx];
+  const L = currentData.layout?.suggested || '—';
+  const sec = currentData.article?.section || '—';
+  const angle = document.getElementById('angleInput').value.trim();
+  const text = `ENCABEZADO:\n${p.header}\n\nSUMARIO:\n${p.summary}\n\nLAYOUT: ${L}  |  SECCIÓN: ${sec}\nÁNGULO: ${angle}`;
+  document.getElementById('copyBlock').textContent = text;
+  document.getElementById('sheetOverlay').classList.add('open');
+}
+function closeSheet(e) {
+  if (!e || e.target === document.getElementById('sheetOverlay')) {
+    document.getElementById('sheetOverlay').classList.remove('open');
+  }
+}
+function doCopy() {
+  const text = document.getElementById('copyBlock').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    closeSheet();
+    showToast('✓ Copy copiado — listo para mandar al diseñador');
+  });
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+let stepTimer = null;
+function showLoading() {
+  document.getElementById('loadingState').classList.add('visible');
+  document.getElementById('genBtn').disabled = true;
+  const steps = ['step1','step2','step3','step4'];
+  steps.forEach(s => { const el = document.getElementById(s); el.className='loading-step'; });
+  let cur = 0;
+  document.getElementById(steps[0]).classList.add('active');
+  stepTimer = setInterval(() => {
+    if (cur < steps.length-1) {
+      document.getElementById(steps[cur]).classList.replace('active','done');
+      cur++;
+      document.getElementById(steps[cur]).classList.add('active');
+    }
+  }, 900);
+}
+function hideLoading() {
+  document.getElementById('loadingState').classList.remove('visible');
+  document.getElementById('genBtn').disabled = false;
+  if (stepTimer) clearInterval(stepTimer);
+}
+function showResults() {
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('actionBar').style.display = 'flex';
+  document.getElementById('results').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function hideResults() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('actionBar').style.display = 'none';
+}
+function showError(msg) {
+  const el = document.getElementById('errorCard');
+  el.textContent = '⚠ ' + msg;
+  el.classList.add('visible');
+  el.style.display = 'block';
+}
+function hideError() {
+  const el = document.getElementById('errorCard');
+  el.classList.remove('visible');
+  el.style.display = 'none';
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') generate();
+});
+</script>
+</body>
+</html>
