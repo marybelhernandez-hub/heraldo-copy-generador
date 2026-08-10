@@ -12,27 +12,32 @@ export default async function handler(req, res) {
   try {
     const prompt = system ? `${system}\n\n${message}` : message;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 1500,
-          }
-        })
-      }
-    );
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 1500,
+        }
+      })
+    });
+
+    const rawText = await response.text();
 
     if (!response.ok) {
-      const err = await response.text();
-      return res.status(502).json({ error: 'Gemini API error', detail: err });
+      // Return the full Gemini error so we can see it
+      return res.status(502).json({ 
+        error: 'Gemini API error', 
+        status: response.status,
+        detail: rawText
+      });
     }
 
-    const data = await response.json();
+    const data = JSON.parse(rawText);
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({ text });
 
