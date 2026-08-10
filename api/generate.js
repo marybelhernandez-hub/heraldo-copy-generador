@@ -6,32 +6,34 @@ export default async function handler(req, res) {
   const { system, message } = req.body || {};
   if (!message) return res.status(400).json({ error: 'Missing message' });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system: system || '',
-        messages: [{ role: 'user', content: message }]
-      })
-    });
+    const prompt = system ? `${system}\n\n${message}` : message;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 1500,
+          }
+        })
+      }
+    );
 
     if (!response.ok) {
       const err = await response.text();
-      return res.status(502).json({ error: 'Anthropic API error', detail: err });
+      return res.status(502).json({ error: 'Gemini API error', detail: err });
     }
 
     const data = await response.json();
-    const text = data.content?.find(b => b.type === 'text')?.text || '';
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return res.status(200).json({ text });
 
   } catch (err) {
