@@ -689,8 +689,27 @@ async function generate() {
 
     const raw = json.text || '';
     let parsed;
-    try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
-    catch(e) { throw new Error('No se pudo leer la respuesta. Intenta de nuevo.'); }
+    try {
+      let clean = raw.replace(/```json/gi, '').replace(/```/g, '').trim();
+      // Extract the JSON object even if there's text around it
+      const start = clean.indexOf('{');
+      const end = clean.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        clean = clean.slice(start, end + 1);
+      }
+      parsed = JSON.parse(clean);
+    }
+    catch(e) {
+      console.error('Raw response:', raw);
+      throw new Error('No se pudo leer la respuesta. Respuesta recibida: ' + raw.slice(0, 300));
+    }
+
+    if (!parsed.proposals || !Array.isArray(parsed.proposals) || parsed.proposals.length === 0) {
+      throw new Error('La IA no devolvio propuestas. Intenta de nuevo.');
+    }
+    if (!parsed.article) parsed.article = { title: 'Nota', summary: '', section: selectedSection || '' };
+    if (!parsed.layout) parsed.layout = { suggested: 'A', reason: '' };
+
     currentData = parsed;
     hideLoading();
     renderResults(parsed);
