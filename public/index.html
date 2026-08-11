@@ -618,23 +618,22 @@ ERRORES PROHIBIDOS:
 - Más de 8 palabras en el encabezado
 - Citas largas sin tensión
 
-RESPONDE SOLO con JSON válido. Sin markdown, sin texto adicional:
+RESPONDE SOLO con JSON válido. Sin markdown, sin texto adicional. Se breve en rationale (max 12 palabras):
 {
-  "article": { "title": "título", "summary": "1-2 oraciones", "section": "sección" },
+  "article": { "title": "titulo", "summary": "1 oracion corta", "section": "seccion" },
   "proposals": [
     {
-      "type": "cita|dato|tension|narrativa",
-      "header": "ENCABEZADO EN MAYÚSCULAS",
-      "summary": "Sumario normal máx 15 palabras",
-      "wordCount": 5,
-      "mechanism": "mecanismo activado",
-      "tags": [{"label": "5 palabras", "status": "ok"}, {"label": "mecanismo", "status": "ok"}],
-      "rationale": "1 oración de por qué funciona"
+      "type": "cita",
+      "header": "ENCABEZADO EN MAYUSCULAS",
+      "summary": "Sumario max 15 palabras",
+      "mechanism": "mecanismo",
+      "tags": [{"label": "5 palabras", "status": "ok"}],
+      "rationale": "max 12 palabras"
     }
   ],
-  "layout": { "suggested": "A|B|C", "reason": "1 oración justificando el layout" }
+  "layout": { "suggested": "A", "reason": "max 12 palabras" }
 }
-Genera EXACTAMENTE 3 propuestas, cada una con tipo distinto. Encabezados SIEMPRE en mayúsculas.`;
+Genera EXACTAMENTE 3 propuestas, cada una con tipo distinto (cita, dato, tension o narrativa). Encabezados SIEMPRE en mayusculas.`;
 
 // ── STATE ─────────────────────────────────────────────────────
 let selectedIdx = null;
