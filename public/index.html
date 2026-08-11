@@ -674,8 +674,19 @@ async function generate() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ system: SYSTEM, message: msg })
     });
-    if (!res.ok) throw new Error('Error ' + res.status);
     const json = await res.json();
+
+    if (!res.ok) {
+      let detail = json.error || ('Error ' + res.status);
+      if (json.attempts && json.attempts.length) {
+        const first = json.attempts[0];
+        detail += ' — ' + first.model + ' (' + first.status + '): ' + first.detail;
+      } else if (json.detail) {
+        detail += ' — ' + json.detail;
+      }
+      throw new Error(detail);
+    }
+
     const raw = json.text || '';
     let parsed;
     try { parsed = JSON.parse(raw.replace(/```json|```/g,'').trim()); }
